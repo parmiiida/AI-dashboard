@@ -36,7 +36,7 @@ export default function LoginPage() {
   const onSubmit = async (values: LoginFormValues) => {
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: values.email,
       password: values.password,
     });
@@ -47,8 +47,13 @@ export default function LoginPage() {
       return;
     }
 
-    toast.success("Logged in successfully");
-    router.push("/dashboard");
+    if (data.user) {
+      toast.success("Logged in successfully");
+      // Redirect to /dashboard/[userId]
+      router.push(`/dashboard/${data.user.id}`);
+    } else {
+      toast.error("No user data returned");
+    }
   };
 
   return (
