@@ -28,9 +28,5 @@ A sleek and beginner-friendly AI Tools Dashboard built with **Next.js**, **TypeS
 - 🎥 Video Generation (Planned)
 - 🧹 Prompt Cleaner / Optimizer (Planned)
 
-## 📦 Getting Started
 
-### 1. Clone the Repository
-
-```bash
 
