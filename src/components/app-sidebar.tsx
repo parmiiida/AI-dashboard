@@ -1,4 +1,8 @@
+"use client";
+
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useEffect, useState } from "react";
 
 import {
   Sidebar,
@@ -24,36 +28,51 @@ import {
 import { Separator } from "./ui/separator";
 import { User2, ChevronUp } from "lucide-react";
 
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-];
-
 export function AppSidebar() {
+  const supabase = createClientComponentClient();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Menu items.
+  const items = [
+    {
+      title: "Home",
+      url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
+      icon: Home,
+    },
+    {
+      title: "Inbox",
+      url: "#",
+      icon: Inbox,
+    },
+    {
+      title: "Calendar",
+      url: "#",
+      icon: Calendar,
+    },
+    {
+      title: "Search",
+      url: "#",
+      icon: Search,
+    },
+    {
+      title: "Settings",
+      url: "#",
+      icon: Settings,
+    },
+  ];
+  // The userId is set from Supabase authentication in the useEffect below.
+  // It will be the real authenticated user's ID if logged in.
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUserId(data.user.id);
+      } else {
+        console.error("User not found or not logged in", error);
+      }
+    };
+    getUser();
+  }, []);
   return (
     <Sidebar>
       <SidebarHeader>

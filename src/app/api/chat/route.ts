@@ -5,20 +5,21 @@ export const runtime = "edge";
 
 export async function POST(req: Request) {
   try {
-    const { prompt } = await req.json();
-    if (!prompt) {
+    const { messages } = await req.json();
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
-        { error: "Prompt is required" },
+        { error: "Messages array is required" },
         { status: 400 }
       );
     }
 
-    const messages: GroqMessage[] = [
+    // Prepend system message to the conversation history
+    const groqMessages: GroqMessage[] = [
       { role: "system", content: "You are a helpful assistant." },
-      { role: "user", content: prompt as string },
+      ...messages, // Include the full conversation history
     ];
 
-    const result = await getGroqChatResponse(messages);
+    const result = await getGroqChatResponse(groqMessages);
     return NextResponse.json({ result });
   } catch (error: any) {
     console.error("Groq API error:", error.message, error.stack);

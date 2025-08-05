@@ -44,7 +44,7 @@ const Chatbox = () => {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ messages: [...messages, userMessage] }),
       });
 
       const data = await res.json();
