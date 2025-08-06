@@ -3,6 +3,10 @@
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState } from "react";
+import { useChat } from "@/context/chat-context";
+import ChatHistoryList from "@/components/ChatHistoryList";
+import type { ChatHistoryItem } from "@/types/chat";
+import UserDropdown from "./UserDropdown";
 
 import {
   Sidebar,
@@ -14,65 +18,68 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-  SidebarProvider,
-  SidebarHeader,
-  SidebarFooter,
-} from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { SidebarHeader, SidebarFooter } from "@/components/ui/sidebar";
 import { Separator } from "./ui/separator";
-import { User2, ChevronUp } from "lucide-react";
 
 export function AppSidebar() {
+  const { setMessages } = useChat();
   const supabase = createClientComponentClient();
   const [userId, setUserId] = useState<string | null>(null);
+  const [historyItems, setHistoryItems] = useState<ChatHistoryItem[]>([]);
 
-  // Menu items.
+  // Menu items
   const items = [
     {
       title: "Home",
       url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
       icon: Home,
     },
-    {
-      title: "Inbox",
-      url: "#",
-      icon: Inbox,
-    },
-    {
-      title: "Calendar",
-      url: "#",
-      icon: Calendar,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: Search,
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
-    },
+    // {
+    //   title: "Inbox",
+    //   url: "#",
+    //   icon: Inbox,
+    // },
+    // {
+    //   title: "Calendar",
+    //   url: "#",
+    //   icon: Calendar,
+    // },
+    // {
+    //   title: "Search",
+    //   url: "#",
+    //   icon: Search,
+    // },
+    // {
+    //   title: "Settings",
+    //   url: "#",
+    //   icon: Settings,
+    // },
   ];
-  // The userId is set from Supabase authentication in the useEffect below.
-  // It will be the real authenticated user's ID if logged in.
+
   useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (data?.user) {
-        setUserId(data.user.id);
+    const getUserAndHistory = async () => {
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+      if (userData?.user) {
+        const id = userData.user.id;
+        setUserId(id);
+
+        try {
+          const res = await fetch("/api/save-history/latest");
+          const historyData: ChatHistoryItem[] = await res.json();
+          setHistoryItems(historyData || []);
+          console.log("Fetched historyData:", historyData); // <-- Add this
+        } catch (error) {
+          console.error("Error fetching history", error);
+        }
       } else {
-        console.error("User not found or not logged in", error);
+        console.error("User not found or not logged in", userError);
       }
     };
-    getUser();
-  }, []);
+
+    getUserAndHistory();
+  }, [supabase]);
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -81,7 +88,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="mb-26">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
@@ -93,37 +100,20 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
+
             <Separator />
+
+            {historyItems.length > 0 && (
+              <ChatHistoryList
+                historyItems={historyItems}
+                onSelectChat={setMessages}
+              />
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <User2 /> Username
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
-              >
-                <DropdownMenuItem>
-                  <span>Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Billing</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <UserDropdown />
       </SidebarFooter>
     </Sidebar>
   );

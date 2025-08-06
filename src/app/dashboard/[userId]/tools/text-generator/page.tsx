@@ -3,10 +3,21 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { ArrowUp } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useChat } from "@/context/chat-context";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+}
+
+interface ChatContextType {
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+}
+
+// Simple random session ID generator
+function generateSessionId() {
+  return Math.random().toString(36).substring(2, 10);
 }
 
 export default function Page() {
@@ -14,10 +25,29 @@ export default function Page() {
   const router = useRouter();
   const initialPrompt = searchParams.get("prompt") || "";
   const [prompt, setPrompt] = useState(initialPrompt);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, setMessages } = useChat();
   const [loading, setLoading] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
   const hasSentInitialPrompt = useRef(false);
+  const [sessionId] = useState(() => generateSessionId());
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Save chat history helper
+  async function saveChatHistory(session_id: string, messages: Message[]) {
+    try {
+      const res = await fetch("/api/save-history/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id, messages }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        console.error("Failed to save chat history:", data.error);
+      }
+    } catch (error) {
+      console.error("Error saving chat history:", error);
+    }
+  }
 
   // Only send initial prompt if messages are empty
   useEffect(() => {
@@ -37,6 +67,26 @@ export default function Page() {
     }
   }, [initialPrompt, messages.length]);
 
+  useEffect(() => {
+    async function loadMessages() {
+      try {
+        const res = await fetch(
+          `/api/save-history/by-session?session_id=${sessionId}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setMessages(data); // data is the full messages array
+        } else {
+          console.error("Failed to load messages");
+        }
+      } catch (error) {
+        console.error("Error loading messages", error);
+      }
+    }
+
+    loadMessages();
+  }, [sessionId]);
+
   const handleSendPrompt = async (promptToSend: string) => {
     if (!promptToSend.trim()) return;
 
@@ -44,6 +94,10 @@ export default function Page() {
     setMessages((prev) => [...prev, userMessage]);
     setPrompt("");
     setLoading(true);
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
 
     try {
       const res = await fetch("/api/chat", {
@@ -60,7 +114,13 @@ export default function Page() {
           ? data.result
           : `Error: ${data.error}${data.details ? ` - ${data.details}` : ""}`,
       };
-      setMessages((prev) => [...prev, assistantMessage]);
+
+      setMessages((prev) => {
+        const updatedMessages = [...prev, assistantMessage];
+        // Save chat history after updating messages
+        saveChatHistory(sessionId, updatedMessages);
+        return updatedMessages;
+      });
     } catch (error) {
       setMessages((prev) => [
         ...prev,
@@ -73,15 +133,10 @@ export default function Page() {
     setLoading(false);
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleSendPrompt(prompt);
-  };
-
-  // Auto-scroll to the bottom
+  // Auto-scroll to the bottom (actually top because flex-col-reverse)
   useEffect(() => {
     chatRef.current?.scrollTo({
-      top: 0, // Top of reversed container is "bottom" visually
+      top: 0,
       behavior: "smooth",
     });
   }, [messages]);
@@ -118,8 +173,15 @@ export default function Page() {
 
         {/* Input */}
         <div className="p-4 border-t border-neutral-800 scroll-hidden">
-          <form onSubmit={handleSubmit} className="relative w-full">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendPrompt(prompt);
+            }}
+            className="relative w-full"
+          >
             <textarea
+              ref={textareaRef}
               rows={1}
               value={prompt}
               onKeyDown={(e) => {
@@ -136,8 +198,8 @@ export default function Page() {
               }}
               placeholder="Enter your message..."
               className="flex-1 p-3 no-scrollbar rounded-lg bg-[#171717] resize-none outline-none text-white min-h-[48px] w-full pr-16"
-              style={{ height: "auto" }}
             />
+
             <button
               type="submit"
               disabled={loading}

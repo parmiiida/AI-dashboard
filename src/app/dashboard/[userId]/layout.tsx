@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { ClientSidebarWrapper } from "@/components/ClientSidebarWrapper";
+import { ChatProvider } from "@/context/chat-context";
 
 export default async function Layout({
   children,
@@ -13,11 +14,13 @@ export default async function Layout({
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar />
-      <main className="w-full">
-        <SidebarTrigger />
-        {children}
-      </main>
+      <ChatProvider>
+        <ClientSidebarWrapper />
+        <main className="w-full">
+          <SidebarTrigger />
+          {children}
+        </main>
+      </ChatProvider>
     </SidebarProvider>
   );
 }
