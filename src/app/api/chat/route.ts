@@ -21,11 +21,20 @@ export async function POST(req: Request) {
 
     const result = await getGroqChatResponse(groqMessages);
     return NextResponse.json({ result });
-  } catch (error: any) {
-    console.error("Groq API error:", error.message, error.stack);
+  }catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Groq API error:", error.message, error.stack);
+      return NextResponse.json(
+        { error: "Failed to generate response", details: error.message },
+        { status: 500 }
+      );
+    }
+    // fallback for unknown error types
+    console.error("Groq API error:", error);
     return NextResponse.json(
-      { error: "Failed to generate response", details: error.message },
+      { error: "Failed to generate response", details: String(error) },
       { status: 500 }
     );
   }
+
 }

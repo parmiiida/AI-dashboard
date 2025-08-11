@@ -29,7 +29,8 @@ const Chatbox = () => {
       }
     };
     getUser();
-  }, []);
+  }, [supabase]);
+
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -6,7 +6,6 @@ import { Bot } from "lucide-react";
 import { Button } from "../ui/button";
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
