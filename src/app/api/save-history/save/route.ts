@@ -1,48 +1,39 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { getAuthenticatedUser, unauthorizedResponse } from "@/lib/supabaseServer";
 
 export async function POST(req: Request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
-    const body = await req.json();
-    const { session_id, messages } = body;
+    const { supabase, user, error } = await getAuthenticatedUser();
+    if (error || !user) return unauthorizedResponse();
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    const { session_id, messages } = await req.json();
 
-    if (userError || !user) {
-      console.error("User not authenticated or error:", userError);
+    if (!session_id || !messages) {
       return NextResponse.json(
-        { error: "User not authenticated" },
-        { status: 401 }
+        { error: "session_id and messages are required" },
+        { status: 400 }
       );
     }
 
-    const { error: upsertError } = await supabase.from("chat_history").upsert(
-      [
-        {
+    const { error: upsertError } = await supabase
+      .from("chat_history")
+      .upsert(
+        [{
           user_id: user.id,
           session_id,
           messages,
-        },
-      ],
-      { onConflict: "user_id,session_id" }
-    );
+          updated_at: new Date().toISOString(), // optional
+        }],
+        { onConflict: "user_id,session_id" }
+      );
 
     if (upsertError) {
-      console.error("Upsert error:", upsertError);
       return NextResponse.json({ error: upsertError.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("Unexpected error in POST /api/save-history/save:", err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("POST /save-history/save error:", err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

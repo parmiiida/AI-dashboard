@@ -94,7 +94,7 @@ export const ChatDemo = () => {
           <div className="text-xs text-muted-foreground">GPT-4</div>
         </div>
         {/* chat messages */}
-        <div className="h-96 overflow-y-auto p-4 space-y-4">
+        <div className="h-96 overflow-y-auto scrollbar-hidden p-4 space-y-4">
           {visibleMessages.map((message) => (
             <div
               key={message.id}
@@ -136,7 +136,6 @@ export const ChatDemo = () => {
                   <User className="w-4 h-4 text-foreground" />
                 </div>
               )}
-              ) (
             </div>
           ))}
 

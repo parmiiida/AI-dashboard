@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, FormEvent } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowUp } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useChat } from "@/context/chat-context";
@@ -10,12 +10,6 @@ interface Message {
   content: string;
 }
 
-interface ChatContextType {
-  messages: Message[];
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-}
-
-// Simple random session ID generator
 function generateSessionId() {
   return Math.random().toString(36).substring(2, 10);
 }
@@ -32,7 +26,6 @@ export default function Page() {
   const [sessionId] = useState(() => generateSessionId());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Save chat history helper
   async function saveChatHistory(session_id: string, messages: Message[]) {
     try {
       const res = await fetch("/api/save-history/save", {
@@ -44,12 +37,60 @@ export default function Page() {
         const data = await res.json();
         console.error("Failed to save chat history:", data.error);
       }
-    } catch (error) {
-      console.error("Error saving chat history:", error);
+    } catch (err) {
+      console.error("Error saving chat history:", err);
     }
   }
 
-  // Only send initial prompt if messages are empty
+  const handleSendPrompt = useCallback(
+    async (promptToSend: string) => {
+      if (!promptToSend.trim()) return;
+
+      const userMessage: Message = { role: "user", content: promptToSend };
+      setMessages((prev) => [...prev, userMessage]);
+      setPrompt("");
+      setLoading(true);
+
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: [...messages, userMessage] }),
+        });
+
+        const data = await res.json();
+
+        const assistantMessage: Message = {
+          role: "assistant",
+          content: res.ok
+            ? data.result
+            : `Error: ${data.error}${data.details ? ` - ${data.details}` : ""}`,
+        };
+
+        setMessages((prev) => {
+          const updatedMessages = [...prev, assistantMessage];
+          saveChatHistory(sessionId, updatedMessages);
+          return updatedMessages;
+        });
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "Error: Failed to connect to the server",
+          },
+        ]);
+      }
+
+      setLoading(false);
+    },
+    [messages, sessionId, setMessages]
+  );
+
   useEffect(() => {
     if (
       initialPrompt &&
@@ -59,13 +100,13 @@ export default function Page() {
       hasSentInitialPrompt.current = true;
       (async () => {
         await handleSendPrompt(initialPrompt);
-        setPrompt(""); // Clear textarea
+        setPrompt("");
         router.replace(
           "/dashboard/566270fd-a10e-4d4c-b64b-d0640dc9b647/tools/text-generator"
         );
       })();
     }
-  }, [initialPrompt, messages.length]);
+  }, [initialPrompt, messages.length, handleSendPrompt, router]);
 
   useEffect(() => {
     async function loadMessages() {
@@ -75,65 +116,18 @@ export default function Page() {
         );
         if (res.ok) {
           const data = await res.json();
-          setMessages(data); // data is the full messages array
+          setMessages(data);
         } else {
           console.error("Failed to load messages");
         }
-      } catch (error) {
-        console.error("Error loading messages", error);
+      } catch (err) {
+        console.error("Error loading messages", err);
       }
     }
 
     loadMessages();
-  }, [sessionId]);
+  }, [sessionId, setMessages]);
 
-  const handleSendPrompt = async (promptToSend: string) => {
-    if (!promptToSend.trim()) return;
-
-    const userMessage: Message = { role: "user", content: promptToSend };
-    setMessages((prev) => [...prev, userMessage]);
-    setPrompt("");
-    setLoading(true);
-
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [...messages, userMessage] }), // Send full message history
-      });
-
-      const data = await res.json();
-
-      const assistantMessage: Message = {
-        role: "assistant",
-        content: res.ok
-          ? data.result
-          : `Error: ${data.error}${data.details ? ` - ${data.details}` : ""}`,
-      };
-
-      setMessages((prev) => {
-        const updatedMessages = [...prev, assistantMessage];
-        // Save chat history after updating messages
-        saveChatHistory(sessionId, updatedMessages);
-        return updatedMessages;
-      });
-    } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Error: Failed to connect to the server",
-        },
-      ]);
-    }
-    setLoading(false);
-  };
-
-  // Auto-scroll to the bottom (actually top because flex-col-reverse)
   useEffect(() => {
     chatRef.current?.scrollTo({
       top: 0,
@@ -142,7 +136,7 @@ export default function Page() {
   }, [messages]);
 
   return (
-    <div className=" bg-black text-white flex items-center justify-center p-4">
+    <div className="bg-black text-white flex items-center justify-center p-4">
       <div className="w-full max-w-4xl flex flex-col rounded-xl shadow-lg h-[92vh]">
         {/* Messages */}
         <div
@@ -211,7 +205,7 @@ export default function Page() {
                 </p>
               ) : (
                 <span className="bg-white/30 rounded-2xl h-7 w-7 -mr-3 flex items-center justify-center">
-                  <ArrowUp className="size-5 " />
+                  <ArrowUp className="size-5" />
                 </span>
               )}
             </button>

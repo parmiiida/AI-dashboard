@@ -1,31 +1,20 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { getAuthenticatedUser, unauthorizedResponse } from "@/lib/supabaseServer";
 
 export async function GET() {
-  const supabase = createRouteHandlerClient({ cookies });
+  const { supabase, user, error } = await getAuthenticatedUser();
+  if (error || !user) return unauthorizedResponse();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { error: "User not authenticated" },
-      { status: 401 }
-    );
-  }
-
-  const { data, error } = await supabase
+  const { data, error: fetchError } = await supabase
     .from("chat_history")
-    .select("id, session_id,  messages, created_at")
+    .select("session_id, messages, updated_at")
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(7);
+    .order("updated_at", { ascending: false })
+    .limit(7)
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (fetchError) {
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
   }
 
-  return NextResponse.json(data);
+  return NextResponse.json(data || {});
 }

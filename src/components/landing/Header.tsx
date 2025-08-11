@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState } from "react";
-import { Bot, X, Menu } from "lucide-react";
+import { Bot } from "lucide-react";
 import { Button } from "../ui/button";
 
 const Header = () => {

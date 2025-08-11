@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const FooterSection = () => {
   return (
-    <footer className="border-t border-border/50">
+    <footer className=" border-border/50">
       <div className="container mx-auto px-4 lg:px-8 py-16">
         <div className="border-t border-border/50 mt-12 pt-8 flex flex-col lg:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm">

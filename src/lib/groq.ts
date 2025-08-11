@@ -31,11 +31,15 @@ export async function getGroqChatResponse(messages: GroqMessage[]) {
     );
 
     return response.data.choices[0].message.content as string;
-  } catch (error: any) {
-    throw new Error(
-      `Groq API request failed: ${
-        error.response?.data?.error?.message || error.message
-      }`
-    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        `Groq API request failed: ${
+          error.response?.data?.error?.message || error.message
+        }`
+      );
+    } else {
+      throw new Error(`Groq API request failed: ${(error as Error).message}`);
+    }
   }
 }

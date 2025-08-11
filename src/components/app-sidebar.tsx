@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Home } from "lucide-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState } from "react";
 import { useChat } from "@/context/chat-context";

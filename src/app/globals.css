@@ -44,9 +44,9 @@
 }
 
 :root {
+  --radius: 0.5rem;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --radius: 0.5rem;
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
@@ -104,4 +104,12 @@
 .no-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.bg-gradient-hero {
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0) 60%
+  );
 }

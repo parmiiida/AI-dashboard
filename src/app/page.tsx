@@ -1,6 +1,4 @@
 import CTAsection from "@/components/landing/CTAsection";
-import { Head } from "next/document";
-import Image from "next/image";
 import Header from "@/components/landing/Header";
 import HeroSection from "@/components/landing/HeroSection";
 import { HowItWorks } from "@/components/landing/HowItWorks";

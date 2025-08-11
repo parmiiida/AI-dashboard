@@ -5,7 +5,7 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Clock } from "lucide-react";
-import type { Message, ChatHistoryItem, AppSidebarProps } from "@/types/chat";
+import type { Message, ChatHistoryItem } from "@/types/chat";
 
 export default function ChatHistoryList({
   historyItems,
@@ -19,7 +19,7 @@ export default function ChatHistoryList({
       <SidebarGroupLabel>History</SidebarGroupLabel>
       <SidebarMenu>
         {historyItems.map((history) => (
-          <SidebarMenuItem key={history.id}>
+          <SidebarMenuItem key={history.session_id}>
             <SidebarMenuButton
               asChild
               onClick={async (e) => {

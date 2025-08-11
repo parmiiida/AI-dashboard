@@ -1,40 +1,27 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { getAuthenticatedUser, unauthorizedResponse } from "@/lib/supabaseServer";
 
 export async function GET(req: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
+  const { supabase, user, error } = await getAuthenticatedUser();
+  if (error || !user) return unauthorizedResponse();
+
   const { searchParams } = new URL(req.url);
   const session_id = searchParams.get("session_id");
 
   if (!session_id) {
-    return NextResponse.json(
-      { error: "session_id is required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "session_id is required" }, { status: 400 });
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { error: "User not authenticated" },
-      { status: 401 }
-    );
-  }
-
-  const { data, error } = await supabase
+  const { data, error: fetchError } = await supabase
     .from("chat_history")
     .select("messages")
     .eq("user_id", user.id)
     .eq("session_id", session_id)
-    .limit(1);
+    .maybeSingle(); // ✅ prevents 500 if no match
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (fetchError) {
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
   }
 
-  return NextResponse.json(data?.[0]?.messages || []);
+  return NextResponse.json(data?.messages || []);
 }
