@@ -31,7 +31,6 @@ const Chatbox = () => {
     getUser();
   }, [supabase]);
 
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!prompt.trim() || !userId) return;
@@ -92,10 +91,10 @@ const Chatbox = () => {
 
   return (
     <div>
-      <div className="w-full max-w-lg p-6 bg-[#252627] rounded-xl shadow-md text-black">
+      <div className="w-full max-w-lg p-6 bg-[#202021] rounded-xl shadow-xl ">
         <form onSubmit={handleSubmit} className="space-y-4">
           <textarea
-            className="w-full p-2 border rounded-md text-black"
+            className="w-full p-2 border-none no-scrollbar focus:outline-none rounded-md "
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Enter your message..."
@@ -109,7 +108,7 @@ const Chatbox = () => {
           />
           <button
             type="submit"
-            className="w-full p-2 bg-[#2f3133] text-white cursor-pointer rounded-xl hover:bg-[#2f3032] disabled:bg-gray-400"
+            className="w-full p-2 bg-[#303132] text-white cursor-pointer rounded-xl hover:bg-[#2f3032] disabled:bg-gray-400"
             disabled={loading || !userId}
           >
             {loading ? "Generating..." : "Send Message"}

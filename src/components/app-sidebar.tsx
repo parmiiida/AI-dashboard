@@ -1,20 +1,19 @@
 "use client";
 
-import { Home } from "lucide-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState } from "react";
 import { useChat } from "@/context/chat-context";
 import ChatHistoryList from "@/components/ChatHistoryList";
 import type { ChatHistoryItem } from "@/types/chat";
-import UserDropdown from "./UserDropdown";
+import UserDropdown from "./sidebar/UserDropdown";
+import Toolbar from "./sidebar/Toolbar";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
+  SidebarGroupLabel,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { SidebarHeader, SidebarFooter } from "@/components/ui/sidebar";
@@ -27,33 +26,6 @@ export function AppSidebar() {
   const [historyItems, setHistoryItems] = useState<ChatHistoryItem[]>([]);
 
   // Menu items
-  const items = [
-    {
-      title: "Home",
-      url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
-      icon: Home,
-    },
-    // {
-    //   title: "Inbox",
-    //   url: "#",
-    //   icon: Inbox,
-    // },
-    // {
-    //   title: "Calendar",
-    //   url: "#",
-    //   icon: Calendar,
-    // },
-    // {
-    //   title: "Search",
-    //   url: "#",
-    //   icon: Search,
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings,
-    // },
-  ];
 
   useEffect(() => {
     const getUserAndHistory = async () => {
@@ -87,19 +59,10 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="mb-26">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <SidebarMenuItem>Home</SidebarMenuItem>
+            <SidebarGroupLabel>Tools</SidebarGroupLabel>
 
+            <Toolbar />
             <Separator />
 
             {historyItems.length > 0 && (
