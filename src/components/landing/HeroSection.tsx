@@ -1,9 +1,12 @@
+"use client";
+
 import React from "react";
 import { ChatDemo } from "./ChatDemo";
 import { Sparkles } from "lucide-react";
 import { Bot } from "lucide-react";
 import { Button } from "../ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const HeroSection = () => {
   return (
@@ -31,11 +34,20 @@ const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="default" size="lg" className="group">
-                Start using AI Tools{" "}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button variant="outline" size="lg">
+            <Link href="/register" prefetch>
+            <Button className="group cursor-pointer" size="lg" variant="default">
+    Start using AI Tools{" "}
+    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+  </Button>
+</Link>
+              <Button variant="outline" className="cursor-pointer"
+  size="lg"
+  onClick={() => {
+    const el = document.getElementById("how-it-works");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  }}>
                 See How it works
               </Button>
             </div>

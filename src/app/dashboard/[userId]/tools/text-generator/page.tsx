@@ -197,7 +197,7 @@ export default function Page() {
             <button
               type="submit"
               disabled={loading}
-              className="absolute bottom-2 right-2 px-4 py-2 rounded-lg disabled:bg-gray-500"
+              className="absolute bottom-2 right-2 px-4 py-2 rounded-lg "
             >
               {loading ? (
                 <p className="bg-white/30 rounded-2xl h-7 w-7 -mr-3 flex items-center justify-center">

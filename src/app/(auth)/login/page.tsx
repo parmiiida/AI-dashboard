@@ -37,12 +37,16 @@ export default function LoginPage() {
     setLoading(true);
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: values.email,
-      password: values.password,
+      email: values.email.trim(),
+      password: values.password.trim(),
     });
 
     if (error) {
-      toast.error(error.message);
+      if (error.status === 400) {
+        toast.error("Invalid email or password, or email not confirmed.");
+      } else {
+        toast.error(error.message);
+      }
       setLoading(false);
       return;
     }

@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 const SignUpSchema = z.object({
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
@@ -39,6 +41,12 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
+      options: {
+        data: {
+          first_name: values.first_name,
+          last_name: values.last_name,
+        },
+      },
     });
 
     if (error) {
@@ -62,6 +70,36 @@ export default function RegisterPage() {
         </div>
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-1">
+              <Label htmlFor="first_name">First Name</Label>
+              <Input
+                id="first_name"
+                type="text"
+                {...form.register("first_name")}
+                disabled={loading}
+              />
+              {form.formState.errors.first_name && (
+                <p className="text-sm text-red-500">
+                  {form.formState.errors.first_name.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="last_name">Last Name</Label>
+              <Input
+                id="last_name"
+                type="text"
+                {...form.register("last_name")}
+                disabled={loading}
+              />
+              {form.formState.errors.last_name && (
+                <p className="text-sm text-red-500">
+                  {form.formState.errors.last_name.message}
+                </p>
+              )}
+            </div>
+
             <div className="space-y-1">
               <Label htmlFor="email">Email</Label>
               <Input

@@ -26,7 +26,7 @@ const steps = [
 
 export const HowItWorks = () => {
   return (
-    <section className="py-20 lg:py-32">
+    <section className="py-20 lg:py-32" id="how-it-works">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center space-y-6 mb-16">
           <h2>How it works</h2>
