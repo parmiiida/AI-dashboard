@@ -1,17 +1,27 @@
 "use client";
 
 import React from "react";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, LoaderCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useState } from "react";
 
 const CTAsection = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = () => {
+    setLoading(true);
+    // Simulate async action (API call, navigation, etc.)
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  };
   return (
     <section className="py-10 lg:py-32 overflow-x-hidden">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="relative bg-gradient-hero border-border/20 rounded-3xl p-12 lg:p-20 text-center overflow-hidden">
           {/* Blurred background */}
-          <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-3xl opacity-10 scale-110" />
+          <div className="absolute inset-0 bg-white/50 rounded-3xl blur-3xl opacity-10 scale-110" />
 
           <div className="relative max-w-4xl mx-auto space-y-8">
             {/* Top badge */}
@@ -34,9 +44,19 @@ const CTAsection = () => {
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/login" prefetch>
-                <Button className="group cursor-pointer" size="lg" variant="default">
+                <Button
+                  className="group cursor-pointer"
+                  size="lg"
+                  variant="default"
+                  onClick={handleClick}
+                  disabled={loading}
+                >
                   Go to Dashboard
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  {loading ? (
+                    <LoaderCircle className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <ArrowRight className="w-5 h-5 " />
+                  )}
                 </Button>
               </Link>
               <Button variant="default" size="lg">

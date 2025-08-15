@@ -29,19 +29,23 @@ export const HowItWorks = () => {
     <section className="py-20 lg:py-32" id="how-it-works">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="text-center space-y-6 mb-16">
-          <h2>How it works</h2>
+          <h2 className="text-4xl font-bold">How it works</h2>
           <p>
             Het up and running with AI tools is just three simple steps. No
             complex setup or technical knowledfe reqiored.
           </p>
         </div>
         <div className="relative">
-          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from transparent via-border to-transparent transform -translate-y-1/2"></div>
+          <div
+            className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5
+  bg-gradient-to-r from-transparent via-[#232323] to-transparent
+  transform animate-pulse -translate-y-1/2"
+          ></div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
             {steps.map((step, index) => (
               <div key={index} className="relative">
                 <div className="text-center space-y-6">
-                  <div className="inline-flex items-center justify-center w-16 h-16bg-gradient-primary text-white rounded-2xl text-xl font-bold shadow-elegant">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 text-white rounded-2xl text-xl font-bold shadow-elegant">
                     {step.step}
                   </div>
 

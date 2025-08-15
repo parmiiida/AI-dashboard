@@ -11,7 +11,7 @@ const Header = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center">
               <Bot className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold text-foreground">
@@ -20,10 +20,10 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/login" >
+            <Link href="/login">
               <Button variant="ghost">Sign In</Button>
             </Link>
-            <Link href="/register" >
+            <Link href="/register">
               <Button variant="default">Sign Up</Button>
             </Link>
           </div>

@@ -62,7 +62,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-6">
+      <div className="w-full max-w-md border p-9 border-white/40 rounded-md space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Login</h1>
           <p className="text-sm text-muted-foreground">

@@ -5,10 +5,19 @@ import { ChatDemo } from "./ChatDemo";
 import { Sparkles } from "lucide-react";
 import { Bot } from "lucide-react";
 import { Button } from "../ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LoaderCircle } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 const HeroSection = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  };
   return (
     <section className="relative overflow-hidden  pt-20 pb-16 lg:pb-24 min-h-screen flex items-center">
       <div className="container mx-auto px-4 lg:px-8">
@@ -34,20 +43,33 @@ const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register" prefetch>
-            <Button className="group cursor-pointer" size="lg" variant="default">
-    Start using AI Tools{" "}
-    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-  </Button>
-</Link>
-              <Button variant="outline" className="cursor-pointer"
-  size="lg"
-  onClick={() => {
-    const el = document.getElementById("how-it-works");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  }}>
+              <Link href="/register" prefetch>
+                <Button
+                  className="group cursor-pointer"
+                  size="lg"
+                  variant="default"
+                  onClick={handleClick}
+                  disabled={loading}
+                >
+                  Start using AI Tools
+                  {loading ? (
+                    <LoaderCircle className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <ArrowRight className="w-5 h-5 " />
+                  )}
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                className="cursor-pointer"
+                size="lg"
+                onClick={() => {
+                  const el = document.getElementById("how-it-works");
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+              >
                 See How it works
               </Button>
             </div>
@@ -72,9 +94,9 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-primary rounded-full blur-3xl opacity-10 animate-pulse"></div>
+      <div className="absolute top-1/4 left-1/5 w-96 h-96 bg-white/20 rounded-full blur-3xl opacity-10 animate-pulse"></div>
       <div
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary-glow rounded-full blur-3xl opacity-5 animate-pulse"
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/20 rounded-full blur-3xl opacity-10 animate-pulse"
         style={{ animationDelay: "1s" }}
       ></div>
     </section>

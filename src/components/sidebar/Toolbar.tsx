@@ -3,6 +3,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 
@@ -14,38 +15,34 @@ const Toolbar = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const items = [
     {
-      title: "Home",
-      url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
-      icon: Home,
-    },
-    {
       title: "Background Remover",
       url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
       icon: BrushCleaning,
     },
-    {
-      title: "Product Description Generator",
-      url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
-      icon: Image,
-    },
-    {
-      title: "Ad Copy Generator",
-      url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
-      icon: ShoppingBag,
-    },
-    {
-      title: "Image Enhancer",
-      url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
-      icon: Image,
-    },
-    {
-      title: "Hashtag Generator",
-      url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
-      icon: Hash,
-    },
+    // {
+    //   title: "Product Description Generator",
+    //   url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
+    //   icon: Image,
+    // },
+    // {
+    //   title: "Ad Copy Generator",
+    //   url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
+    //   icon: ShoppingBag,
+    // },
+    // {
+    //   title: "Image Enhancer",
+    //   url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
+    //   icon: Image,
+    // },
+    // {
+    //   title: "Hashtag Generator",
+    //   url: userId ? `/dashboard/${userId}/tools/text-generator` : "#",
+    //   icon: Hash,
+    // },
   ];
   return (
-    <SidebarMenu className="mb-26">
+    <SidebarMenu className="mb-10">
+      <SidebarGroupLabel>Tools</SidebarGroupLabel>
       {items.map((item) => (
         <SidebarMenuItem key={item.title}>
           <SidebarMenuButton asChild>

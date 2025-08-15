@@ -6,12 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarSeparator,
-} from "../ui/sidebar";
+import { useAuth } from "@/app/hooks/useLogout";
+import { SidebarMenuButton } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
 import { User2, ChevronUp, ChevronDown } from "lucide-react";
 import UserIcon from "../shared/UserIcon";
@@ -20,6 +16,7 @@ import { useUser } from "@/app/hooks/useUser";
 export default function UserDropdown() {
   const user = useUser();
   if (!user) return null;
+  const { logout } = useAuth();
 
   return (
     <DropdownMenu>
@@ -47,7 +44,7 @@ export default function UserDropdown() {
         <DropdownMenuItem>
           <span>Billing</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>
           <span>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

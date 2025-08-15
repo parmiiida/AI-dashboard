@@ -62,8 +62,8 @@ export const ChatDemo = () => {
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="flex justify-center mb-8">
+    <div className="w-full max-w-6xl  mx-auto">
+      <div className="flex justify-center  mb-8">
         <div className="flex items-center gap-6 bg-card/50 backdrop-blur-sm border border-border/50 rounded-full px-6 py-3">
           {features.map((feature, index) => (
             <div
@@ -77,8 +77,8 @@ export const ChatDemo = () => {
         </div>
       </div>
 
-      <div className="bg-gradient-chat border-border/50 rounded-2xl shadow-chat overflow-hidden">
-        <div className="bg-card/50 border-b border-border/50 p-4 flex items-center justify-between">
+      <div className="bg-gradient-chat border-border/50 rounded-2xl shadow-chat overflow-hidden ">
+        <div className="bg-card/50 border-b border-border/50 p-4 flex items-center  justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
               <Bot className="w-5 h-5 text-white" />
@@ -91,10 +91,10 @@ export const ChatDemo = () => {
               </p>
             </div>
           </div>
-          <div className="text-xs text-muted-foreground">GPT-4</div>
+          <div className="text-xs text-muted-foreground">Groq</div>
         </div>
         {/* chat messages */}
-        <div className="h-96 overflow-y-auto scrollbar-hidden p-4 space-y-4">
+        <div className="h-96 overflow-y-auto custom-scrollbar p-4 space-y-4">
           {visibleMessages.map((message) => (
             <div
               key={message.id}
